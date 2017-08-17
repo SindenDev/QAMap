@@ -7,7 +7,7 @@ Text {
     verticalAlignment: Text.AlignVCenter
     horizontalAlignment: Text.AlignHCenter
     font.family:"FontAwesome"// fontAwesome.name
-    font.pixelSize: 18
-    Component.onCompleted: console.debug(Awesome.map['align_justify'])
+    font.pixelSize: 24
+//    Component.onCompleted: console.debug(Awesome.map['align_justify'])
     FontLoader { id: fontAwesome; source: "qrc:/fontawesome/FontAwesome.otf" }
 }

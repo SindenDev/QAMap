@@ -1,6 +1,6 @@
-import QtQuick 2.0
-import QtLocation 5.3
-import QtPositioning 5.8
+import QtQuick 2.4
+import QtLocation 5.9
+import QtPositioning 5.6
 import QtQuick.Controls 2.2
 import "amap.js" as AMAP_API
 import "fontawesome"// as FontAwesome
@@ -69,11 +69,11 @@ Map {
     //    onWidthChanged: AMAP_API.width = width
     //    onHeightChanged: AMAP_API.height =height
     //    onZoomLevelChanged: AMAP_API.zoom = Math.floor(zoomLevel)
-    //    onCenterChanged: {
-    //        AMAP_API.latitude = center.latitude
-    //        AMAP_API.longitude = center.longitude
-    //        amapImage.source = AMAP_API.getAMapSource()
-    //    }
+        onCenterChanged: {
+            AMAP_API.latitude = center.latitude
+            AMAP_API.longitude = center.longitude
+//            amapImage.source = AMAP_API.getAMapSource()
+        }
 
     //    Image {
     //        id: amapImage
@@ -96,6 +96,30 @@ Map {
             radius: 24-map.zoomLevel
       }
     
+    function addSearchItem(tips){
+        searchComboBox.updataModel(tips)  
+//        console.debug("Tips", JSON.stringify(tips))
+        for(var i in tips){
+//            console.debug(tips[i].name,JSON.stringify(tips[i]))
+            if("" == tips[i].location) continue
+            var point = (tips[i].location).split(",")
+            var component = Qt.createComponent("qrc:/MapSearchItem.qml");
+    
+           if (component.status == Component.Ready){
+    
+               var search_item  = component.createObject(map, {"name":tips[i].name,"index": (parseInt(i)+1),
+                                             "coordinate": QtPositioning.coordinate(point[1], point[0])});
+               map.addMapItem(search_item)
+                
+           }
+            
+           
+//            mapCircleObject.center = QtPositioning.coordinate(point[1],point[0])
+//            map.addMapItem(mapCircleObject)
+//            map.center = mapCircleObject.center
+        }
+
+    } 
     
     ComboBox{
         id: searchComboBox
@@ -104,17 +128,17 @@ Map {
         onCurrentTextChanged: searchTextField.text = currentText
         function updataModel(data){
             model = data
-            popup.open()
+            popup.open()           
+            map.clearMapItems()
         }
     }
     TextField{
         id: searchTextField
         placeholderText: qsTr("搜索位置、公交、地铁站")
-        text: "公园"
+        text: "松坪山"
         onAccepted: {
             AMAP_API.getInputtips(searchTextField.text, function(tips){
-        
-             searchComboBox.updataModel(tips.tips)                         
+                addSearchItem(tips.tips)                                    
          })
         }
         FontAwesome{
@@ -130,7 +154,7 @@ Map {
                 onClicked:{                     
                      AMAP_API.getInputtips(searchTextField.text, function(tips){
 //                        console.debug("Tips",tips.info, JSON.stringify(tips))
-                         searchComboBox.updataModel(tips.tips)                         
+                         addSearchItem(tips.tips)                        
                      })
                 }
             }
