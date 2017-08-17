@@ -22,6 +22,15 @@ Map {
             name: "amap"//"googlemaps"
             Component.onCompleted: {
                 console.debug(availableServiceProviders)
+                
+                AMAP_API.getWeatherInfo("深圳", function(info){
+                    console.debug(info.lives[0].province
+                                  +info.lives[0].city + "\n"
+                                  +"天气:"+info.lives[0].weather + "\n"
+                                  +"温度:"+info.lives[0].temperature+"度\n"
+                                  +info.lives[0].winddirection + info.lives[0].windpower + "级\n"
+                                  +"湿度:" + info.lives[0].humidity)
+                })
                 var origin="",destination=""
                 AMAP_API.getGeoCode("宝安公园西二门","深圳", function(geo){
                     for(var i in  geo.geocodes){

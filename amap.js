@@ -107,5 +107,9 @@ function getInputtips(keywords, callback){
     sendXMLHttpRequest(url,callback)
 }
 
-
+function getWeatherInfo(city, callback){
+    var url = "http://restapi.amap.com/v3/weather/weatherInfo?key=" + amap_key 
+    url += "&city=" + city
+    sendXMLHttpRequest(url, callback)
+}
 
