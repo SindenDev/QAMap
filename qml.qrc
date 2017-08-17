@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>AMap.qml</file>
+        <file>amap.js</file>
+        <file>fontawesome/awesome.js</file>
+        <file>fontawesome/FontAwesome.otf</file>
+        <file>fontawesome/FontAwesome.qml</file>
+    </qresource>
+</RCC>
