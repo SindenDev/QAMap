@@ -7,5 +7,6 @@
         <file>fontawesome/FontAwesome.otf</file>
         <file>fontawesome/FontAwesome.qml</file>
         <file>MapSearchItem.qml</file>
+        <file>transform.js</file>
     </qresource>
 </RCC>

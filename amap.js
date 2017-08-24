@@ -58,16 +58,16 @@ function getGeoCode(address, city, callback){
 //            })
 var locations_info = new Array
 //AMAP_API.locations_info.push({location:"116.496167,39.917066",time:"1434077500",direction:"1",speed:"1"})
-function getAutoGrasp(callback){
+function getAutoGrasp(infos,callback){
 
     var locations="", time="", direction="", speed=""
 
-    for(var i in locations_info)
+    for(var i in infos)
     {
-        locations += locations_info[i].location + "|"
-        time += locations_info[i].time + ","
-        direction += locations_info[i].direction + ","
-        speed += locations_info[i].speed + ","
+        locations += infos[i].location + "|"
+        time += infos[i].time + ","
+        direction += infos[i].direction + ","
+        speed += infos[i].speed + ","
     }
     locations = locations.substring(0, locations.lastIndexOf('|'));
     time = time.substring(0, time.lastIndexOf(','));
@@ -80,7 +80,7 @@ function getAutoGrasp(callback){
         url += "&time=" + time
         url += "&direction=" + direction
         url += "&speed=" + speed
-    
+    console.debug(url)
     sendXMLHttpRequest(url,callback)
     locations.length = 0
 }

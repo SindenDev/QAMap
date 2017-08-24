@@ -3,6 +3,7 @@ import QtLocation 5.9
 import QtPositioning 5.6
 import QtQuick.Controls 2.2
 import "amap.js" as AMAP_API
+import "transform.js" as Transform
 import "fontawesome"// as FontAwesome
 Map { 
     id: map
@@ -15,63 +16,100 @@ Map {
 //            easing.type: Easing.Linear}
 //    }
     
-    
+//    if(googleMap.plugin.name == Transform.transformMapName)
+//    {//GoogleMap.GPS.gcj_encrypt(data_json.Lat, data_json.Lon)//
+//        var gmap =  Transform.wgs2gcj(lat,lon)
+//        lat = gmap.lat
+//        lon = gmap.lon
+//    }
 
     //    Address{}
-        plugin: Plugin{
-            name: "amap"//"googlemaps"
-            Component.onCompleted: {
-                console.debug(availableServiceProviders)
-                
-                AMAP_API.getWeatherInfo("深圳", function(info){
-                    console.debug(info.lives[0].province
-                                  +info.lives[0].city + "\n"
-                                  +"天气:"+info.lives[0].weather + "\n"
-                                  +"温度:"+info.lives[0].temperature+"度\n"
-                                  +info.lives[0].winddirection + info.lives[0].windpower + "级\n"
-                                  +"湿度:" + info.lives[0].humidity)
-                })
-                var origin="",destination=""
-                AMAP_API.getGeoCode("宝安公园西二门","深圳", function(geo){
+    
+    function testWeather(){
+        AMAP_API.getWeatherInfo("深圳", function(info){
+            console.debug(info.lives[0].province
+                          +info.lives[0].city + "\n"
+                          +"天气:"+info.lives[0].weather + "\n"
+                          +"温度:"+info.lives[0].temperature+"度\n"
+                          +info.lives[0].winddirection + info.lives[0].windpower + "级\n"
+                          +"湿度:" + info.lives[0].humidity)
+        })
+    }
+    
+    function testAutoGrasp(){
+console.debug(Date())
+        var infos = new Array
+        console.debug()
+        infos.push({location:"113.944037,22.556817",time: Math.floor(Date.now()/1000),direction:"1",speed:"1"})
+        infos.push({location:"113.943425,22.556732",time: Math.floor(1+Date.now()/1000),direction:"1",speed:"1"})
+        infos.push({location:"113.942438,22.556985",time: Math.floor(3+Date.now()/1000),direction:"2",speed:"2"})
+        AMAP_API.getAutoGrasp(infos,function(grasp){
+            console.debug("grasp",grasp.info, JSON.stringify(grasp))
+            for(var i in grasp.roads){
+                console.debug("G:",grasp.roads[i].roadname, grasp.roads[i].crosspoint)
+               
+            }
+        })
+    }
+
+    function testDrivingDirection(){
+        var origin="",destination=""
+        AMAP_API.getGeoCode("宝安公园西二门","深圳", function(geo){
+            for(var i in  geo.geocodes){
+                origin = geo.geocodes[i].location
+//                    console.debug()
+//                    var location = geo.geocodes[i].location.split(",")
+//                    testItem.center.latitude = location[1]
+//                    testItem.center.longitude = location[0]
+//                    map.center = testItem.center
+                AMAP_API.getGeoCode("华瀚科技","深圳", function(geo){
                     for(var i in  geo.geocodes){
-                        origin = geo.geocodes[i].location
-    //                    console.debug()
-    //                    var location = geo.geocodes[i].location.split(",")
-    //                    testItem.center.latitude = location[1]
-    //                    testItem.center.longitude = location[0]
-    //                    map.center = testItem.center
-                        AMAP_API.getGeoCode("华瀚科技","深圳", function(geo){
-                            for(var i in  geo.geocodes){
-                                destination =  geo.geocodes[i].location
-            ////                    console.debug()
-    //                            var location = geo.geocodes[i].location.split(",")
-    //                            testItem.center.latitude = location[1]
-    //                            testItem.center.longitude = location[0]
-    //                            map.center = testItem.center
-                                AMAP_API.getDrivingDirection(origin, destination, function(driving){
-    //                                console.debug("driving.info",origin, destination)
+                        destination =  geo.geocodes[i].location
+    ////                    console.debug()
+//                            var location = geo.geocodes[i].location.split(",")
+//                            testItem.center.latitude = location[1]
+//                            testItem.center.longitude = location[0]
+//                            map.center = testItem.center
+                        AMAP_API.getDrivingDirection(origin, destination, function(driving){
+//                                console.debug("driving.info",origin, destination)
 
-                                    var steps = driving.route.paths[0].steps
-                                    routeLine.addCoordinate(origin.split(",")[1],origin.split(",")[0])
-                                    for (var i in steps){
-    //                                    console.debug(steps[i].instruction)
-                                         var polylinepoints = steps[i].polyline.split(";")
-                                         for(var j in polylinepoints){
+                            var steps = driving.route.paths[0].steps
+                            routeLine.addCoordinate(origin.split(",")[1],origin.split(",")[0])
+                            for (var i in steps){
+//                                    console.debug(steps[i].instruction)
+                                 var polylinepoints = steps[i].polyline.split(";")
+                                 for(var j in polylinepoints){
 
-                                             var point = polylinepoints[j].split(",")
-    //                                         console.debug(point[1], ",",point[0])
-                                             routeLine.addCoordinate(QtPositioning.coordinate(point[1],point[0]))
-                                         }//
-                                    }
-                                    routeLine.addCoordinate(destination.split(",")[1],destination.split(",")[0])
-                                    originItem.center = routeLine.path[0]
-                                    destinationItem.center = routeLine.path[routeLine.path.length-1]
-                                })
+                                     var point = polylinepoints[j].split(",")
+//                                         console.debug(point[1], ",",point[0])
+                                     routeLine.addCoordinate(QtPositioning.coordinate(point[1],point[0]))
+                                 }//
                             }
+                            routeLine.addCoordinate(destination.split(",")[1],destination.split(",")[0])
+                            originItem.center = routeLine.path[0]
+                            destinationItem.center = routeLine.path[routeLine.path.length-1]
                         })
                     }
                 })
-                //
+            }
+        })    
+    }
+    activeMapType: map.supportedMapTypes[10]
+        plugin: Plugin{
+            name: "esri"//"amap"//"googlemaps"
+            Component.onCompleted: {
+                console.debug(availableServiceProviders,preferred)
+                testWeather()
+                testDrivingDirection()
+                testAutoGrasp()
+                console.debug("supportedMapTypes:--------------------------------")
+                for(var i in map.supportedMapTypes)
+                {
+                    console.debug("|-->",i,map.supportedMapTypes[i].description,"->"
+                                  ,map.supportedMapTypes[i].mobile,"->"
+                                  ,map.supportedMapTypes[i].name)
+                }
+                console.debug("--------------------------------------------------")
             }
         }
 
